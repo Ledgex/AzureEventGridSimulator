@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -91,6 +92,10 @@ namespace AzureEventGridSimulator.Domain.Commands
             {
                 _logger.LogDebug("Event {EventId} sent to subscriber '{SubscriberName}' successfully.", evt.Id, subscription.Name);
             }
+            else if (IsWebHookNotListening(task))
+            {
+                _logger.LogError("Event {EventId} sent to subscriber '{SubscriberName}' failed, Subscriber actively refused connection.", evt.Id, subscription.Name);
+            }
             else
             {
                 _logger.LogError(task.Exception?.GetBaseException(),
@@ -100,6 +105,11 @@ namespace AzureEventGridSimulator.Domain.Commands
                                  task.Status.ToString(),
                                  task.Result?.ReasonPhrase);
             }
+        }
+
+        private bool IsWebHookNotListening(Task<HttpResponseMessage> task)
+        {
+            return task.Exception?.InnerExceptions.Any(ie => (ie as HttpRequestException)?.Message.Contains("actively refused") ?? false) ?? false;
         }
     }
 }

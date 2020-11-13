@@ -48,7 +48,10 @@ namespace AzureEventGridSimulator
         public void Configure(IApplicationBuilder app)
         {
             app.UseMiddleware<EventGridMiddleware>();
-            app.UseMvc();
+            app.UseRouting();
+            app.UseEndpoints(e => {
+                e.MapControllers();
+            });
         }
     }
 
