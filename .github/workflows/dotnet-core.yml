@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env: 
+      PROJECT_NAME: AzureEventGridSimulator
+      
     steps:
 
     - name: Checkout repo
